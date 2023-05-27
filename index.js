@@ -42,7 +42,7 @@ app.post('/new-message', async (req, res) => {
     try {
         await axios.post(TELEGRAM_URI, {
             chat_id: chatId,
-            text: actualFilms
+            text: JSON.stringify(actualFilms)
         })
         res.send('Done')
     } catch (e) {
