@@ -21,6 +21,8 @@ app.post('/new-message', async (req, res) => {
     const messageText = message?.text?.toLowerCase()?.trim()
     const chatId = message?.chat?.id
 
+    console.log(message)
+
     if (!messageText || !chatId) {
       return res.sendStatus(400)
     }
