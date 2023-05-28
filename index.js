@@ -3,7 +3,7 @@ import { config } from 'dotenv'
 import {load} from 'cheerio'
 import {Bot} from "grammy"
 import {schedule} from 'node-cron'
-
+const app = express()
 config()
 
 const bot = new Bot(`${process.env.TELEGRAM_API_TOKEN}`)
@@ -36,4 +36,6 @@ bot.hears('films', async (ctx) => {
 
 bot.start();
 
-  
+app.listen(process.env.DEVPORT, () => {
+  console.log(`Server running on port ${process.env.PORT}`);
+});  
