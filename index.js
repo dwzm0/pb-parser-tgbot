@@ -27,6 +27,8 @@ app.post('/new-message', async (req, res) => {
       return res.sendStatus(400)
     }
     
+    let responseText = "I am running"
+
     if (messageText === "films") {
     const {data} = await axios.get('https://thepiratebay.party/top/200');
     const $ = load(data);
@@ -41,10 +43,12 @@ app.post('/new-message', async (req, res) => {
     })
     const actualFilms = films.filter(film => film.date.includes('Y-day') ||
                                              film.date.includes('Today'))    
+    responseText = actualFilms
+                                          
     try {
         await axios.post(TELEGRAM_URI, {
             chat_id: chatId,
-            text: JSON.stringify(actualFilms)
+            text: JSON.stringify(responseText)
         })
         res.send('Done')
     } catch (e) {
