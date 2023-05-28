@@ -22,6 +22,8 @@ app.post('/new-message', async (req, res) => {
     const chatId = message?.chat?.id
 
     console.log(message)
+    console.log(messageText)
+    console.log(chatId)
 
     if (!messageText || !chatId) {
       return res.sendStatus(400)
