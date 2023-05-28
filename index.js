@@ -5,8 +5,10 @@ import {Bot} from "grammy"
 import express from 'express'
 import {schedule} from 'node-cron'
 
-const app = express()
 config()
+
+const app = express()
+app.use(express.json());
 
 const bot = new Bot(`${process.env.TELEGRAM_API_TOKEN}`)
 
@@ -38,6 +40,10 @@ bot.hears('films', async (ctx) => {
 
 bot.start();
 
-app.listen(process.env.DEVPORT, () => {
+app.get('/', (req, res) => {
+  res.send('hello world')
+})
+
+app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });  
