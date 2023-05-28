@@ -1,67 +1,39 @@
 import axios from 'axios'
 import { config } from 'dotenv'
-import express from 'express'
 import {load} from 'cheerio'
+import {Bot} from "grammy"
+import {schedule} from 'node-cron'
 
 config()
 
-const app = express()
+const bot = new Bot(`${process.env.TELEGRAM_API_TOKEN}`)
 
-const TELEGRAM_URI = `https://api.telegram.org/bot${process.env.TELEGRAM_API_TOKEN}/sendMessage`
+const prepareFilms = async() => {
+  const {data} = await axios.get('https://thepiratebay.party/top/200');
+  const $ = load(data);
+  const items = $('#main-content #searchResult tbody')
+  const films = []
 
-app.use(express.json())
-app.use(
-  express.urlencoded({
-    extended: true
+  items.find('tr').each((i, el) => {
+      const film = {name: "", date: ""}
+      film.name = $(el).children('td:eq(1)').text()
+      film.date = $(el).children('td:eq(2)').text()
+      films.push(film)
   })
-)
-
-app.post('/new-message', async (req, res) => {
-    const {message} = req.body
-    const messageText = message?.text?.toLowerCase()?.trim()
-    const chatId = message?.chat?.id
-
-    console.log(message)
-    console.log(messageText)
-    console.log(chatId)
-
-    if (!messageText || !chatId) {
-      return res.sendStatus(400)
-    }
-    
-    let responseText = "I am running"
-
-    if (messageText === "films") {
-    const {data} = await axios.get('https://thepiratebay.party/top/200');
-    const $ = load(data);
-    const items = $('#main-content #searchResult tbody')
-    const films = []
-
-    items.find('tr').each((i, el) => {
-        const film = {name: "", date: ""}
-        film.name = $(el).children('td:eq(1)').text()
-        film.date = $(el).children('td:eq(2)').text()
-        films.push(film)
-    })
-    const actualFilms = films.filter(film => film.date.includes('Y-day') ||
-                                             film.date.includes('Today'))    
-    responseText = actualFilms
-                                          
-    try {
-        await axios.post(TELEGRAM_URI, {
-            chat_id: chatId,
-            text: JSON.stringify(responseText)
-        })
-        res.send('Done')
-    } catch (e) {
-        console.log(e)
-        res.send(e)
-    }
+  return films.filter(film => film.date.includes('Y-day') ||
+                              film.date.includes('Today'))
 }
-  })
-  
 
-app.listen(process.env.DEVPORT, () => {
-    console.log(`Server running on port ${process.env.DEVPORT}`);
-  });
+schedule("0 9,21 * * *", async function(){
+  const films = await prepareFilms()  
+  films.forEach(film => bot.api.sendMessage(341296010, `${film.name + film.date}`))
+})
+
+bot.hears('films', async (ctx) => {
+   const films = await prepareFilms()  
+   films.forEach(film => ctx.reply(`${film.name + film.date}`))    
+})
+
+bot.start();
+
   
