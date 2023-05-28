@@ -2,7 +2,9 @@ import axios from 'axios'
 import { config } from 'dotenv'
 import {load} from 'cheerio'
 import {Bot} from "grammy"
+import express from 'express'
 import {schedule} from 'node-cron'
+
 const app = express()
 config()
 
