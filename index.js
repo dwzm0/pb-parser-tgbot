@@ -33,6 +33,13 @@ schedule("0 9,21 * * *", async function(){
   films.forEach(film => bot.api.sendMessage(341296010, `${film.name + film.date}`))
 })
 
+schedule("*/10 * * * *", async function(){
+  const resp = await axios.get('https://pb-parser-tgbot.onrender.com')    
+  console.log(resp)        
+  console.log("IM THERE")        
+})
+
+
 bot.hears('films', async (ctx) => {
    const films = await prepareFilms()  
    films.forEach(film => ctx.reply(`${film.name + film.date}`))    
@@ -46,4 +53,4 @@ app.get('/', (req, res) => {
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
-});  
+});   
