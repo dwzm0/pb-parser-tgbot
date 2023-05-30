@@ -33,10 +33,9 @@ schedule("0 9,21 * * *", async function(){
   films.forEach(film => bot.api.sendMessage(341296010, `${film.name + film.date}`))
 })
 
-schedule("*/10 * * * *", async function(){
-  const resp = await axios.get('https://pb-parser-tgbot.onrender.com')    
-  console.log(resp)        
-  console.log("IM THERE")        
+schedule("*/5 * * * *", async function(){
+   await axios.get('https://pb-parser-tgbot.onrender.com')    
+   console.log("IM THERE")        
 })
 
 
